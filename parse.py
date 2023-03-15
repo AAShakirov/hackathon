@@ -19,7 +19,7 @@ from selenium.webdriver.chrome.service import Service
 # login = int(input('Введите номер студенческого билета: '))
 # password = input('Введите пароль от moodle: ')
 login = 20002390
-password = 'Cant1Be2Destoyed3'
+password = 'Cant1Be2Destroyed3'
 # Указываем путь к драйверу для Chrome
 driver_path = f'webdriver\chromedriver.exe'
 
@@ -38,7 +38,7 @@ login_case = driver.find_element(by=By.NAME, value='Z21FAMILY')
 login_case.send_keys(password)
 
 # Находим элемент ссылки на странице и кликаем по ней
-link = driver.find_element(by=By.XPATH, value="/html/body/div[3]/table/tbody/tr[1]/td/div[5]/table/tbody/tr/td[5]/table/tbody/tr[1]/td[3]/input")
+link = driver.find_element(by=By.XPATH, value="/html/body/div[3]/table/tbody/tr[1]/td/div[5]/table/tbody/tr/td[5]/table/tbody/tr[1]/td[3]/input[@type='image' and @onclick='uc_logIn(); return false;']")
 link.click()
 
 # Получаем HTML страницы и сохраняем в файл
