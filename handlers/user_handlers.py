@@ -30,6 +30,13 @@ async def process_start_command(message: Message):
 async def process_help_command(message: Message):
     await message.answer(LEXICON[message.text])
 
+# Этот хэндлер будет срабатывать на команду "/sign_up"
+# и авторизовывать пользователя на сайте
+@router.message(Command(commands='sign_up'))
+async def process_help_command(message: Message):
+    await message.answer(LEXICON[message.text])
+    # функция открытия браузреа
+
 
 # Этот хэндлер будет срабатывать на команду "/beginning"
 # и отправлять пользователю первую страницу книги с кнопками пагинации
