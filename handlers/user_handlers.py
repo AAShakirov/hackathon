@@ -30,6 +30,12 @@ async def process_start_command(message: Message):
 async def process_help_command(message: Message):
     await message.answer(LEXICON[message.text])
 
+# Этот хэндлер будет срабатывать на команду "worktime"
+# и отправлять пользователю сообщение со списком доступных команд в боте
+@router.message(Command(commands='worktime'))
+async def process_help_command(message: Message):
+    await message.answer(LEXICON[message.text])
+
 # Этот хэндлер будет срабатывать на команду "/sign_up"
 # и авторизовывать пользователя на сайте
 @router.message(Command(commands='sign_up'))
