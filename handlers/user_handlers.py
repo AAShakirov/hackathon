@@ -1,17 +1,35 @@
 from copy import deepcopy
+import re
 
-from aiogram import Router
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.fsm.context import FSMContext
+from aiogram import Router, Bot
 from aiogram.filters import Command, CommandStart, Text
 from aiogram.types import CallbackQuery, Message
 from database.database import user_dict_template, users_db
 from filters.filters import IsDelBookmarkCallbackData, IsDigitCallbackData
+from aiogram.filters.state import State, StatesGroup
 from keyboards.bookmarks_kb import (create_bookmarks_keyboard,
                                     create_edit_keyboard)
 from keyboards.pagination_kb import create_pagination_keyboard
 from lexicon.lexicon import LEXICON
 from services.file_handling import book
 
+
 router: Router = Router()
+
+class Form(StatesGroup):
+    login = State()
+    password = State()
+
+def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
+    """
+    Создаёт реплай-клавиатуру с кнопками в один ряд
+    :param items: список текстов для кнопок
+    :return: объект реплай-клавиатуры
+    """
+    row = [KeyboardButton(text=item) for item in items]
+    return ReplyKeyboardMarkup(keyboard=[row], resize_keyboard=True)
 
 
 # Этот хэндлер будет срабатывать на команду "/start" -
@@ -38,10 +56,52 @@ async def process_help_command(message: Message):
 
 # Этот хэндлер будет срабатывать на команду "/sign_up"
 # и авторизовывать пользователя на сайте
-@router.message(Command(commands='sign_up'))
-async def process_help_command(message: Message):
-    await message.answer(LEXICON[message.text])
-    # функция открытия браузреа
+
+
+    # await message.answer(LEXICON[message.text])
+    await Form.login.set() # set state to the first field to fill (name)
+    await message.reply("Введите номер студенческого билета")
+    # await bot.send_message(f'{user_login = }\n{user_password = }')
+
+# @router.message(Command("sign_up'"))
+# async def process_sign_up_command(message: Message, state: FSMContext):
+#     await message.answer(
+#         text="Введите номер студенческого билета:",
+#         # reply_markup=make_row_keyboard(available_food_names)
+#     )
+#     # Устанавливаем пользователю состояние "выбирает название"
+#     await state.set_state(Form.login)
+
+
+
+
+
+# # handler to get the user's name and move to the next state (age)
+# @router.message(state=Form.login)
+# async def process_name(message: Message, state: FSMContext):
+#     async with state as data:
+#         data['login'] = message.text
+#     await Form.next()
+#     await message.reply("Введите пароль от moodle")
+
+# @router.message(lambda message: message.text.isdigit(), state=Form.password)
+# async def process_age(message: Message, state: FSMContext):
+#     async with state as data:
+#         data['password'] = message.text
+#     await Form.next()
+#     await message.reply("Введите пароль от moodle")
+
+# # handler to get the user's gender and wrap up the form filling process
+# @router.message(state=Form.gender)
+# async def process_gender(message: Message, state: FSMContext):
+#     async with state as data:
+#         data['password'] = message.text
+#         # you can do something with the data here, for example,
+#         # store it in a database or send it to an API
+#         response = f"Thank you for filling out the form, {data['password']}.  {data['password']}"
+
+
+
 
 
 # Этот хэндлер будет срабатывать на команду "/beginning"
@@ -160,6 +220,13 @@ async def process_cancel_press(callback: CallbackQuery):
     await callback.message.edit_text(text=LEXICON['cancel_text'])
     await callback.answer()
 
+reg = re.compile(r'^Логин: (.*)$')
+async def handle_message_start_with_123(message: Message):
+    # Check if the message text matches the regular expression
+    match = reg.match(message.text)
+    if match:
+        # Do something with the message (e.g. reply with a message)
+        await message.reply("You sent a message that starts with 'Логин: '")
 
 # Этот хэндлер будет срабатывать на нажатие инлайн-кнопки
 # с закладкой из списка закладок к удалению
